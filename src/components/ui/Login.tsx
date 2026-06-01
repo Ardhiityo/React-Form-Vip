@@ -6,7 +6,11 @@ type FormInputs = {
 };
 
 export default function Login() {
-  const { control, handleSubmit } = useForm<FormInputs>();
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<FormInputs>();
 
   const onSubmit = (data: FormInputs) => console.log(data);
 
@@ -21,6 +25,16 @@ export default function Login() {
               name="username"
               control={control}
               defaultValue=""
+              rules={{
+                required: {
+                  value: true,
+                  message: "Username field is required.",
+                },
+                minLength: {
+                  value: 3,
+                  message: "The Username field must be at least 3 characters.",
+                },
+              }}
               render={({ field }) => (
                 <input
                   {...field}
@@ -31,6 +45,11 @@ export default function Login() {
                 />
               )}
             />
+            {errors.username && (
+              <span className="text-sm text-red-500 font-semibold">
+                {errors.username.message}
+              </span>
+            )}
           </div>
           <div className="flex flex-col gap-2">
             <label htmlFor="password">Password*</label>
@@ -38,6 +57,16 @@ export default function Login() {
               name="password"
               control={control}
               defaultValue=""
+              rules={{
+                required: {
+                  value: true,
+                  message: "Password field is required.",
+                },
+                minLength: {
+                  value: 8,
+                  message: "The Password field must be at least 8 characters.",
+                },
+              }}
               render={({ field }) => (
                 <input
                   {...field}
@@ -48,6 +77,11 @@ export default function Login() {
                 />
               )}
             />
+            {errors.password && (
+              <span className="text-sm text-red-500 font-semibold">
+                {errors.password.message}
+              </span>
+            )}
           </div>
           <div>
             <button
