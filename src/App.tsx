@@ -1,7 +1,13 @@
+import { useState } from "react";
+import Product from "./components/ui/Product";
+import Navbar from "./components/ui/Navbar";
+
 function App() {
+  const [session, setSession] = useState<string | null>("logged");
   return (
     <>
-      <h1 className="text-2xl font-semibold">Hello React!</h1>
+      <Navbar setSession={setSession} />
+      {session && <Product />}
     </>
   );
 }
