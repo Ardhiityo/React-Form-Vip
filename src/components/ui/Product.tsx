@@ -49,7 +49,10 @@ function Product() {
             <Loading />
           ) : (
             data.map((item: Product) => (
-              <div className="border-2 border-slate-200 p-3">
+              <div
+                className="border-2 border-slate-200 p-3"
+                key={`products-item-${item.id}`}
+              >
                 <div className="flex justify-center pt-10">
                   <img src={item.image} alt={item.title} className="h-32" />
                 </div>
