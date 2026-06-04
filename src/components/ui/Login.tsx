@@ -1,6 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm, Controller } from "react-hook-form";
 import * as z from "zod";
+import { useMutation } from "@tanstack/react-query";
+import type { Dispatch, SetStateAction } from "react";
 
 const schema = z.object({
   username: z
@@ -8,12 +10,32 @@ const schema = z.object({
     .min(3, "Username must be at least 3 characters"),
   password: z
     .string("Password field is required")
-    .min(8, "Password must be at least 8 characters"),
+    .min(6, "Password must be at least 6 characters"),
 });
 
 type FormInputs = z.infer<typeof schema>;
 
-export default function Login() {
+type setSession = {
+  setSession: Dispatch<SetStateAction<string | null>>
+}
+
+async function LoginUser(data: FormInputs) {
+  try {
+    const response = await fetch("https://fakestoreapi.com/auth/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(data)
+    })
+    return response.json();
+  } catch (error) {
+    return error;
+  }
+}
+
+export default function Login({ setSession }: setSession) {
   const {
     control,
     handleSubmit,
@@ -22,7 +44,21 @@ export default function Login() {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data: FormInputs) => console.log(data);
+  const onSubmit = (data: FormInputs) => mutate(data);
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["login"],
+    mutationFn: async (data: FormInputs) => {
+      return LoginUser(data)
+        .then(res => res);
+    },
+    onError: () => {
+      alert('Username or password is incorrect');
+    },
+    onSuccess: (data) => {
+      setSession(data.token);
+    }
+  });
 
   return (
     <section className="min-h-screen w-screen flex justify-center items-center">
@@ -75,10 +111,10 @@ export default function Login() {
           </div>
           <div>
             <button
-              className="py-1 px-2 bg-slate-400 text-white w-full rounded-md mt-3"
-              type="submit"
+              className="py-1 px-2 bg-slate-400 text-white w-full rounded-md mt-3 disabled:cursor-not-allowed disabled:bg-slate-300"
+              type="submit" disabled={isPending}
             >
-              Login
+              {isPending ? 'Loading...' : 'Login'}
             </button>
           </div>
         </form>

@@ -8,7 +8,7 @@ function App() {
   return (
     <>
       <Navbar setSession={setSession} />
-      {session ? <Product /> : <Login />}
+      {session ? <Product /> : <Login setSession={setSession} />}
     </>
   );
 }
